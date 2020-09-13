@@ -1,0 +1,82 @@
+service: 'app-build'
+
+provider:
+  name: aws
+  region: us-east-2
+  runtime: python3.8 
+  stage: ${opt:stage, 'dev'}
+  logRetentionInDays: ${file(../common/serverless/provider-settings.yml):logRetentionInDays}
+  stackPolicy:
+      -   Effect: Allow
+          Principal: '*'
+          Action: 'Update:*'
+          Resource: '*'
+
+
+functions:
+  line-counter:
+    handler: infra/count.handler
+    Runtime: python3.8 
+    events: 
+      - s3: 
+          bucket: 'mekos-aws-interview-bucket'
+          existing: true 
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: raw/
+    iamRoleStatements: 
+    - Effect: Allow 
+      Action:
+        - logs:CreatLogGroup
+      Resource: arn:aws:logs:us-east-1:595861657400:log-group:/aws/lambda/line-counter
+
+
+resources:
+    Resources:
+        LambdaRole:
+            Type: AWS::IAM::Role
+            Properties:
+                AssumeRolePolicyDocument:
+                    Version: "2012-10-17"
+                    Statement:
+                    -
+                        Effect: Allow
+                        Principal:
+                            Service:
+                                - "lambda.amazonaws.com"
+                        Action:
+                            - "sts:AssumeRole"
+
+                Path: "/"
+                Policies:
+                  - PolicyName: root
+                    PolicyDocument:
+                      Version: "2012-10-17"
+                      Statement:
+                        - Effect: Allow
+                          Action:
+                            - 's3:GetBucketNotification'
+                            - 's3:PutBucketNotification'
+                            - 's3:*'
+                          Resource: 'arn:aws:s3:::mekos-aws-interview-bucket'
+                        - Effect: Allow
+                          Action:
+                            - 'logs:CreateLogGroup'
+                            - 'logs:CreateLogStream'
+                            - 'logs:PutLogEvents'
+                          Resource: 'arn:aws:logs:*:*:*'
+
+
+                ManagedPolicyArns:
+                    - arn:aws:iam::aws:policy/service-role/AWSLambdaRole #for execution
+                    - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole #for logs
+                    - arn:aws:iam::aws:policy/AmazonS3FullAccess #for data access
+        LambdaInvokePermission:
+          Type: 'AWS::Lambda::Permission'
+          Properties:
+            FunctionName: arn:aws:lambda:us-east-2:595861657400:function:${self:service}-dev-line-counter
+            Action: 'lambda:InvokeFunction'
+            Principal: s3.amazonaws.com
+            SourceAccount:  '595861657400'
+  
+
