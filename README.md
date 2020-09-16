@@ -2,7 +2,7 @@
 Take home challenge. Challenge 2
 
 For this challenge, I used a cloud environment to run my code. I ran my code with AWS Lambda collecting data S3. Attached in this 
-repository are YAMl documents used to create the infrastructures needed. I used AWS because I am most comfortable working their infrasture.
+repository are YAMl documents used to create the infrastructures needed. I used AWS because I am most comfortable working their infrastructure. The main file is written in Python code and titled count.py in the infra folder.
 
 
 <h2> Challenge </h2>
