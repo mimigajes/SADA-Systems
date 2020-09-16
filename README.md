@@ -1,11 +1,11 @@
-<h1> SADA-Systems <h1/>
+<h1> SADA-Systems </h1>
 Take home challenge. Challenge 2
 
 For this challenge, I used a cloud environment to run my code. I ran my code with AWS Lambda collecting data S3. Attached in this 
 repository are YAMl documents used to create the infrastructures needed. I used AWS because I am most comfortable working their infrasture.
 
 
-<h2> Challenge <h2>
+<h2> Challenge </h2>
 Read each non-blank line of text from the file loomings.txt available at
 
 https://gist.github.com/bobbae/259e195f11cea0183ea93d378946a737
